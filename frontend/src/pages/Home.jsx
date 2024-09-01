@@ -1,7 +1,18 @@
 import React from 'react'
-
+import Map from '../components/Map'
+import Addbutton from '../components/Addbutton'
+import Groupsbutton from '../components/Groupsbutton'
 export default function Home() {
   return (
-    <div>Home</div>
+    <>
+
+
+    <Map/>
+
+    <Groupsbutton/>
+    <Addbutton/>
+    </>
+
+
   )
 }

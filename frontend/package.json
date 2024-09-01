@@ -8,11 +8,17 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@emotion/react": "latest",
-    "@emotion/styled": "latest",
-    "@mui/material": "latest",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.0.1",
+    "@mui/lab": "^6.0.0-beta.8",
+    "@mui/material": "^6.0.1",
+    "@mui/x-date-pickers": "^7.15.0",
+    "dayjs": "^1.11.13",
+    "leaflet": "^1.9.4",
     "react": "latest",
     "react-dom": "latest",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.26.1"
   },
   "devDependencies": {
