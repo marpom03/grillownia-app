@@ -6,6 +6,8 @@ import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import Permalink from "./pages/Permalink";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./pages/NotFound";
+
 
 export const router = createBrowserRouter([
     {
@@ -33,5 +35,9 @@ export const router = createBrowserRouter([
                 element: <Home />
             },
         ]
-    }
+    },
+    {
+        path: '*',
+        element: <NotFound />
+    },
 ])
