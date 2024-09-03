@@ -1,11 +1,12 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
+const cors = require("cors");
 const db = require("./db/setup-db");
 const app = express();
 const { authenticateToken } = require("./services/jwt")
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
+app.use(cors);
 app.use(express.json());
 
 // Import routes
