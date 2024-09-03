@@ -1,18 +1,34 @@
-import React, { useState } from 'react';
-import { Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Switch, FormControlLabel, Typography, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '../services/axios';
+import { Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Switch, FormControlLabel, Select, MenuItem, InputLabel, FormControl, ListItemText, Checkbox, Typography } from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import dayjs from 'dayjs';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function Groupsbutton() {
   const [open, setOpen] = useState(false);
-  const [isPublic, setIsPublic] = useState(true);
-  const [eventName, setEventName] = useState('');
-  const [startDate, setStartDate] = useState(dayjs());
-  const [endDate, setEndDate] = useState(dayjs());
-  const [description, setDescription] = useState('');
+  const [openNewGroupModal, setOpenNewGroupModal] = useState(false);
+  const [groupName, setGroupName] = useState('');
+  const [seeGrill, setSeeGrill] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState([]);
+  const [people, setPeople] = useState([]);
+
+  useEffect(() => {
+    axiosInstance.get('/users')
+      .then(response => {
+
+        setPeople(response.data.users); // Update state with fetched users
+      })
+      .catch(error => console.error('Error fetching users:', error));
+  }, []);
+
+  useEffect(() => {
+    axiosInstance.get('/groups')
+      .then(response => {
+        console.log(response)
+
+      })
+      .catch(error => console.error('Error fetching users:', error));
+  }, []);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -22,8 +38,20 @@ export default function Groupsbutton() {
     setOpen(false);
   };
 
+  const handleOpenNewGroupModal = () => {
+    setOpenNewGroupModal(true);
+  };
+
+  const handleCloseNewGroupModal = () => {
+    setOpenNewGroupModal(false);
+  };
+
   const handleToggleChange = (event) => {
-    setIsPublic(event.target.checked);
+    setSeeGrill(event.target.checked);
+  };
+
+  const handlePeopleChange = (event) => {
+    setSelectedPeople(event.target.value);
   };
 
   return (
@@ -40,9 +68,75 @@ export default function Groupsbutton() {
       >
         <ListIcon />
       </Fab>
-      
-  
-  
+
+      {/* First Modal - List of Groups */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Groups</DialogTitle>
+        <DialogContent>
+          <Typography>No groups available.</Typography>
+        </DialogContent>
+        <DialogActions style={{ justifyContent: 'flex-end' }}>
+          <Fab color="primary" aria-label="add" onClick={handleOpenNewGroupModal}>
+            <AddIcon />
+          </Fab>
+        </DialogActions>
+      </Dialog>
+
+      {/* Second Modal - Add New Group */}
+      <Dialog open={openNewGroupModal} onClose={handleCloseNewGroupModal}>
+        <DialogTitle>Add New Group</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="groupName"
+            label="Group Name"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+          />
+
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="people-select-label">Select People</InputLabel>
+            <Select
+              labelId="people-select-label"
+              id="people-select"
+              multiple
+              value={selectedPeople}
+              onChange={handlePeopleChange}
+              renderValue={(selected) => selected.join(', ')}
+            >
+              {people.map((person) => (
+                <MenuItem key={person.id} value={person.username}>
+                  <Checkbox checked={selectedPeople.indexOf(person.username) > -1} />
+                  <ListItemText primary={person.username} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={seeGrill}
+                onChange={handleToggleChange}
+                color="primary"
+              />
+            }
+            label="Czy grupa ma widzieć grilla?"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNewGroupModal} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleCloseNewGroupModal} color="primary">
+            Add Group
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
