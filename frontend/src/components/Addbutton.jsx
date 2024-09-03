@@ -6,7 +6,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 
-export default function Addbutton() {
+export default function Addbutton({ lat, lng }) {
+
   const [open, setOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [eventName, setEventName] = useState('');
@@ -49,12 +50,10 @@ export default function Addbutton() {
           style: { padding: '24px' },
         }}
       >
-        <DialogTitle>
-          {/* Changed the heading level to h2 and removed h5 to ensure valid nesting */}
-          <Typography variant="h5" style={{ fontWeight: 'bold', fontFamily: 'Roboto', color: '#333' }}>
-            Nowe Wydarzenie
-          </Typography>
-        </DialogTitle>
+        <Typography variant="h5" style={{ fontWeight: 'bold', fontFamily: 'Roboto', color: '#333' }}>
+          Nowe Wydarzenie
+        </Typography>
+        <Typography variant="body1">{lat} -- {lng}</Typography>
         <DialogContent style={{ padding: '16px 0' }}>
           <TextField
             autoFocus

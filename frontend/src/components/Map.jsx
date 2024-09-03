@@ -4,14 +4,13 @@ import 'leaflet/dist/leaflet.css';
 import Addbutton from './Addbutton';
 import Groupsbutton from './Groupsbutton';
 import axiosInstance from '../services/axios';
-// Dodajemy styl CSS do komponentu
+
 const style = `
   .huechange {
     filter: hue-rotate(150deg); /* Ustawienie koloru markera, dostosuj kąt zgodnie z potrzebami */
   }
 `;
 
-// Dodajemy style do <head> dokumentu
 const addGlobalStyle = (css) => {
   const styleSheet = document.createElement("style");
   styleSheet.type = "text/css";
@@ -19,29 +18,24 @@ const addGlobalStyle = (css) => {
   document.head.appendChild(styleSheet);
 };
 
-
-
-
 const googleSatUrl = 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
 
 const MapComponent = () => {
-  const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 }); // Domyślna pozycja
-
+  const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 });
   const [markerRef, setMarkerRef] = useState(null);
+  const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
     axiosInstance.get('/location/visible')
       .then(response => {
-        console.log(response)
+        setMarkers(response.data.locations);
       })
       .catch(error => console.error('Error fetching users:', error));
   }, []);
-  
 
   useEffect(() => {
     addGlobalStyle(style);
 
-    // Dodajemy klasę do ikony markera po jego dodaniu do mapy
     if (markerRef) {
       markerRef._icon.classList.add("huechange");
     }
@@ -50,7 +44,11 @@ const MapComponent = () => {
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
-        setMarkerPosition(e.latlng); // Aktualizacja pozycji markera
+        const { lat, lng } = e.latlng;
+        // Tylko aktualizuj, jeśli lat i lng są różne od undefined
+        if (lat !== undefined && lng !== undefined) {
+          setMarkerPosition({ lat, lng });
+        }
       }
     });
 
@@ -60,14 +58,14 @@ const MapComponent = () => {
   return (
     <>
       <MapContainer
-        center={[50.0685, 19.90599]} // Centrum mapy
-        zoom={18} // Poziom powiększenia
-        style={{ top: '0', left: '0', width: '100%', height: '100%', position: 'absolute' }} // Pełna szerokość i wysokość okna
-        scrollWheelZoom={false} // Wyłącza zoomowanie kółkiem myszy
-        dragging={false} // Wyłącza przeciąganie mapy
-        touchZoom={false} // Wyłącza zoomowanie za pomocą dotyku
-        doubleClickZoom={false} // Wyłącza zoomowanie przez podwójne kliknięcie
-        zoomControl={false} // Ukrywa kontrolki zoomowania
+        center={[50.0685, 19.90599]}
+        zoom={18}
+        style={{ top: '0', left: '0', width: '100%', height: '100%', position: 'absolute' }}
+        scrollWheelZoom={false}
+        dragging={false}
+        touchZoom={false}
+        doubleClickZoom={false}
+        zoomControl={false}
       >
         <TileLayer
           url={googleSatUrl}
@@ -78,15 +76,21 @@ const MapComponent = () => {
 
         <MapClickHandler />
 
+        {markers.map((location) => (
+          <Marker
+            key={location.id}
+            position={[location.latitude, location.longitude]}
+            ref={(marker) => setMarkerRef(marker)}
+          />
+        ))}
+
         <Marker
-          position={markerPosition} // Ustawienie pozycji markera
-          ref={(marker) => setMarkerRef(marker)} // Przypisanie referencji do markera
+          position={markerPosition}
+          ref={(marker) => setMarkerRef(marker)}
         />
       </MapContainer>
 
       <Groupsbutton />
-      
-      {/* Przekazujemy aktualne współrzędne markera jako propsy do Addbutton */}
       <Addbutton lat={markerPosition.lat} lng={markerPosition.lng} />
     </>
   );
