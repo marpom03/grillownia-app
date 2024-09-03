@@ -1,19 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
 import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
+
+
 export const Register = () => {
   const navigate = useNavigate();
-  const { login, logout, isAuthenticated } = useAuth();
+  const { user, login, logout, loading, register } = useAuth();
+  const [error, setError] = useState("");
 
-  const handleLogin = () => {
-    if (isAuthenticated) {
-      logout();
+  const [formData, setFormData] = useState({
+    username: '',
+    password1: '',
+    password2: '',
+  })
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Here, you would typically call your login function with formData
+    // console.log(formData);
+    if (formData.password1 !== formData.password2) {
+      setError("Passwords are not matching!")
     } else {
-      login();
+      try {
+        await register(formData.username, formData.password1);
+        navigate('/login')
+      } catch (err) {
+        console.log(err.message)
+        setError(err.message)
+      }
     }
-    navigate('/home');
   };
 
   return (
@@ -37,7 +62,7 @@ position:'absolute',
       {/* Formularz logowania */}
       <Box
         component="form"
-        onSubmit={handleLogin}
+        onSubmit={handleSubmit}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -48,8 +73,11 @@ position:'absolute',
         }}
       >
         <TextField
-          label="Login"
+          label="Username"
           variant="outlined"
+          name='username'
+          value={formData.username}
+          onChange={handleChange}
           fullWidth
           sx={{ mb: 2      ,   backgroundColor:'white',}}
         />
@@ -57,6 +85,9 @@ position:'absolute',
           label="Password"
           type="password"
           variant="outlined"
+          name='password1'
+          value={formData.password1}
+          onChange={handleChange}
           fullWidth
           sx={{ mb: 2      ,   backgroundColor:'white',}}
         />
@@ -64,6 +95,9 @@ position:'absolute',
           label="Repeat Password"
           type="password"
           variant="outlined"
+          name='password2'
+          value={formData.password2}
+          onChange={handleChange}
           fullWidth
           sx={{ mb: 2      ,   backgroundColor:'white',}}
         />
