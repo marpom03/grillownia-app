@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../services/axios';
-import { Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Switch, FormControlLabel, Select, MenuItem, InputLabel, FormControl, ListItemText, Checkbox, Typography } from '@mui/material';
+import { Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Switch, FormControlLabel, Select, MenuItem, InputLabel, FormControl, ListItemText, Checkbox, Typography, List, ListItem } from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -11,12 +11,12 @@ export default function Groupsbutton() {
   const [seeGrill, setSeeGrill] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [people, setPeople] = useState([]);
+  const [groups, setGroups] = useState([]); // Stan dla grup
 
   useEffect(() => {
     axiosInstance.get('/users')
       .then(response => {
-
-        setPeople(response.data.users); // Update state with fetched users
+        setPeople(response.data.users); // Aktualizacja stanu użytkowników
       })
       .catch(error => console.error('Error fetching users:', error));
   }, []);
@@ -24,11 +24,22 @@ export default function Groupsbutton() {
   useEffect(() => {
     axiosInstance.get('/groups')
       .then(response => {
-        console.log(response)
-
+        setGroups(response.data); // Aktualizacja stanu grup
       })
-      .catch(error => console.error('Error fetching users:', error));
+      .catch(error => console.error('Error fetching groups:', error));
   }, []);
+
+  const handleToggleChange = async (groupId, currentVisibility) => {
+    const newVisibility = currentVisibility === 1 ? 0 : 1;
+    await axiosInstance.put('/groups', { groupId, visible_location: newVisibility });
+    setGroups(prevGroups =>
+      prevGroups.map(group =>
+        group.id === groupId
+          ? { ...group, visible_location: newVisibility }
+          : group
+      )
+    );
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -46,12 +57,14 @@ export default function Groupsbutton() {
     setOpenNewGroupModal(false);
   };
 
-  const handleToggleChange = (event) => {
-    setSeeGrill(event.target.checked);
-  };
-
   const handlePeopleChange = (event) => {
     setSelectedPeople(event.target.value);
+  };
+
+  const handleAddGroup = async () => {
+
+    await axiosInstance.post('/groups', { name: groupName, users: selectedPeople });
+    setOpenNewGroupModal(false);
   };
 
   return (
@@ -69,11 +82,26 @@ export default function Groupsbutton() {
         <ListIcon />
       </Fab>
 
-      {/* First Modal - List of Groups */}
+      {/* Pierwszy Modal - Lista Grup */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Groups</DialogTitle>
         <DialogContent>
-          <Typography>No groups available.</Typography>
+          {groups.length > 0 ? (
+            <List>
+              {groups.map((group) => (
+                <ListItem key={group.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography>{group.name}</Typography>
+                  <Switch
+                    checked={group.visible_location === 1}
+                    color="primary"
+                    onChange={() => handleToggleChange(group.id, group.visible_location)}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <Typography>No groups available.</Typography>
+          )}
         </DialogContent>
         <DialogActions style={{ justifyContent: 'flex-end' }}>
           <Fab color="primary" aria-label="add" onClick={handleOpenNewGroupModal}>
@@ -82,7 +110,7 @@ export default function Groupsbutton() {
         </DialogActions>
       </Dialog>
 
-      {/* Second Modal - Add New Group */}
+      {/* Drugi Modal - Dodaj Nową Grupę */}
       <Dialog open={openNewGroupModal} onClose={handleCloseNewGroupModal}>
         <DialogTitle>Add New Group</DialogTitle>
         <DialogContent>
@@ -106,33 +134,29 @@ export default function Groupsbutton() {
               multiple
               value={selectedPeople}
               onChange={handlePeopleChange}
-              renderValue={(selected) => selected.join(', ')}
+              renderValue={(selected) => {
+                const selectedNames = people
+                  .filter(person => selected.includes(person.id))
+                  .map(person => person.username);
+                return selectedNames.join(', ');
+              }}
             >
               {people.map((person) => (
-                <MenuItem key={person.id} value={person.username}>
-                  <Checkbox checked={selectedPeople.indexOf(person.username) > -1} />
+                <MenuItem key={person.id} value={person.id}>
+                  <Checkbox checked={selectedPeople.indexOf(person.id) > -1} />
                   <ListItemText primary={person.username} />
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
 
-          <FormControlLabel
-            control={
-              <Switch
-                checked={seeGrill}
-                onChange={handleToggleChange}
-                color="primary"
-              />
-            }
-            label="Czy grupa ma widzieć grilla?"
-          />
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseNewGroupModal} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleCloseNewGroupModal} color="primary">
+          <Button onClick={handleAddGroup} color="primary">
             Add Group
           </Button>
         </DialogActions>

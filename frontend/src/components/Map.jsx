@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import Addbutton from './Addbutton';
 import Groupsbutton from './Groupsbutton';
-
+import axiosInstance from '../services/axios';
 // Dodajemy styl CSS do komponentu
 const style = `
   .huechange {
@@ -19,12 +19,24 @@ const addGlobalStyle = (css) => {
   document.head.appendChild(styleSheet);
 };
 
+
+
+
 const googleSatUrl = 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
 
 const MapComponent = () => {
   const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 }); // Domyślna pozycja
 
   const [markerRef, setMarkerRef] = useState(null);
+
+  useEffect(() => {
+    axiosInstance.get('/location/visible')
+      .then(response => {
+        console.log(response)
+      })
+      .catch(error => console.error('Error fetching users:', error));
+  }, []);
+  
 
   useEffect(() => {
     addGlobalStyle(style);
