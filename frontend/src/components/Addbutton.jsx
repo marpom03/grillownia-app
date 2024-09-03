@@ -50,6 +50,7 @@ export default function Addbutton() {
         }}
       >
         <DialogTitle>
+          {/* Changed the heading level to h2 and removed h5 to ensure valid nesting */}
           <Typography variant="h5" style={{ fontWeight: 'bold', fontFamily: 'Roboto', color: '#333' }}>
             Nowe Wydarzenie
           </Typography>
