@@ -20,7 +20,6 @@ router.get("/", authenticateToken, (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  console.log(username, password)
   // Retrieve the user from the database
   db.get(
     "SELECT * FROM users WHERE username = ?",
@@ -77,8 +76,8 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/logout", (req, res) => {
-  const { token } = req.body;
+router.post("/logout", authenticateToken, (req, res) => {
+  const { token } = req.headers.authorization;
   try {
       deleteTokenFromDatabase(token).then((out) => res.sendStatus(out.status));
   } catch (err) {

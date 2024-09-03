@@ -4,6 +4,7 @@ import RootLayout from "./layouts/RootLayout";
 import Home from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export const router = createBrowserRouter([
     {
@@ -16,7 +17,7 @@ export const router = createBrowserRouter([
     },
     {
         path: '/',
-        element: <RootLayout/>,
+        element: <ProtectedRoute component={RootLayout}/>,
         children: [
             {
                 index: true,

@@ -15,15 +15,19 @@ import {
   desktopLogoStyles,
   titleStyles,
 } from './Navbar.styles';
+import { useAuth } from '../../services/AuthContext';
 
 function Navbar() {
+  const { user, logout } = useAuth()
+
   const handleOpenNavMenu = (event) => {
+    console.log(user)
     setAnchorElNav(event.currentTarget);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Tutaj dodaj logikę wylogowywania
-    alert('Log out');
+    await logout()
   };
 
   return (
@@ -33,7 +37,7 @@ function Navbar() {
           <Box sx={desktopLogoContainerStyles}>
             <OutdoorGrillIcon sx={desktopLogoStyles} />
             <Typography variant="h6" noWrap href="/" sx={titleStyles}>
-              GrillowniaApp
+              {user.username}
             </Typography>
           </Box>
 

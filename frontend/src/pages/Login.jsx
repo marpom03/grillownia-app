@@ -1,19 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../services/AuthContext';
 import OutdoorGrillIcon from '@mui/icons-material/OutdoorGrill';
 export const Login = () => {
   const navigate = useNavigate();
-  const { login, logout, isAuthenticated } = useAuth();
+  const { user, login, logout, loading } = useAuth();
+  const [error, setError] = useState("");
 
-  const handleLogin = () => {
-    if (isAuthenticated) {
-      logout();
-    } else {
-      login();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  })
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Here, you would typically call your login function with formData
+    // console.log(formData);
+    try {
+      await login(formData.username, formData.password);
+      navigate('/')
+    } catch (err) {
+      console.log(err.message)
+      setError(err.message)
     }
-    navigate('/home');
   };
 
   return (
@@ -37,7 +55,7 @@ position:'absolute',
       {/* Formularz logowania */}
       <Box
         component="form"
-        onSubmit={handleLogin}
+        onSubmit={handleSubmit}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -48,15 +66,21 @@ position:'absolute',
         }}
       >
         <TextField
-          label="Login"
+          label="Username"
           variant="outlined"
+          name='username'
+          value={formData.username}
+          onChange={handleChange}
           fullWidth
           sx={{ mb: 2      ,   backgroundColor:'white',}}
         />
         <TextField
           label="Password"
           type="password"
+          name='password'
           variant="outlined"
+          value={formData.password}
+          onChange={handleChange}
           fullWidth
           sx={{ mb: 2      ,   backgroundColor:'white',}}
         />
