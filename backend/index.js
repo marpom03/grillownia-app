@@ -6,7 +6,7 @@ const { authenticateToken } = require("./services/jwt")
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
-app.use(cors);
+app.use(cors());
 app.use(express.json());
 
 // Import routes
