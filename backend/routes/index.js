@@ -34,7 +34,7 @@ router.get("/token", (req, res) => {
         username: user.username,
       }),
       user.id
-    ).then((token) => res.json({ token: token.token }));
+    ).then((token) => res.json({ token: token.token, username: user.username }));
   });
   stmt.finalize();
 });

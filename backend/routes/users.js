@@ -20,7 +20,7 @@ router.get("/", authenticateToken, (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-
+  console.log(username, password)
   // Retrieve the user from the database
   db.get(
     "SELECT * FROM users WHERE username = ?",
@@ -41,7 +41,7 @@ router.post("/login", async (req, res) => {
           generateToken(user, user.id),
           user.id
         );
-        return res.json({ token: out.token });
+        return res.json({ token: out.token, username});
       } catch (error) {
         return res
           .status(error.status || 500)

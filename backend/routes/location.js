@@ -3,7 +3,7 @@ const { authenticateToken } = require("../services/jwt");
 const router = express.Router();
 
 // Define a route for getting locations - TO BE TESTED
-router.get("/locations", authenticateToken, (req, res) => {
+router.get("/visible", authenticateToken, (req, res) => {
     const userId = req.user.id;
   
     const query = `
