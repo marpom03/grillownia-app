@@ -2,8 +2,7 @@ const express = require("express");
 const { authenticateToken } = require("../services/jwt");
 const router = express.Router();
 const db = require("../db/setup-db");
-
-// Define a route for getting locations
+// Define a route for getting locations - TO BE TESTED
 router.get("/visible", authenticateToken, (req, res) => {
     const userId = req.user.id;
   
@@ -22,7 +21,6 @@ router.get("/visible", authenticateToken, (req, res) => {
     `;
   
     db.all(query, [userId], (err, locations) => {
-      console.log(locations)
       if (err) {
         return res.status(500).json({ error: err.message });
       }
