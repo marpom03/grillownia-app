@@ -37,7 +37,7 @@ function Navbar() {
           <Box sx={desktopLogoContainerStyles}>
             <OutdoorGrillIcon sx={desktopLogoStyles} />
             <Typography variant="h6" noWrap href="/" sx={titleStyles}>
-              {user.username}
+              GrillowniaApp
             </Typography>
           </Box>
 

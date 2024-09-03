@@ -9,7 +9,7 @@ router.get("/", authenticateToken, (req, res) => {
 
   // Fetch data from the database or perform your logic here
   db.all(
-    "SELECT * FROM users_groups WHERE user_id = ?",
+    "SELECT * FROM users_groups INNER JOIN groups ON users_groups.group_id = groups.id WHERE user_id = ?",
     [userId],
     (err, row) => {
       if (err) {
