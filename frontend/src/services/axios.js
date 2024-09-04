@@ -1,4 +1,3 @@
-// src/axiosInstance.js
 
 import axios from "axios";
 
@@ -30,7 +29,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Redirect to login or refresh token logic
+
     }
     console.log("Error with receiving");
     return Promise.reject(error);

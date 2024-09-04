@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Dodajemy styl CSS do komponentu
+
 const style = `
   .huechange {
     filter: hue-rotate(150deg); /* Ustawienie koloru markera, dostosuj kąt zgodnie z potrzebami */
   }
 `;
 
-// Dodajemy style do <head> dokumentu
+
 const addGlobalStyle = (css) => {
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
@@ -23,7 +23,7 @@ const googleSatUrl = 'http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
 
 const Permalink = () => {
     const { long, lat } = useParams();
-    const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 }); // Domyślna pozycja
+    const [markerPosition, setMarkerPosition] = useState({ lat: 0, lng: 0 }); 
     const [markerRef, setMarkerRef] = useState(null);
 
     const longitude = parseFloat(long);
@@ -32,7 +32,7 @@ const Permalink = () => {
     useEffect(() => {
         addGlobalStyle(style);
 
-        // Dodajemy klasę do ikony markera po jego dodaniu do mapy
+
         if (markerRef) {
             markerRef._icon.classList.add("huechange");
         }
@@ -41,14 +41,14 @@ const Permalink = () => {
     return (
         <>
             <MapContainer
-                center={[latitude, longitude]}  // Centrum mapy
-                zoom={18} // Poziom powiększenia
-                style={{ top: '0', left: '0', width: '100%', height: '100%', position: 'absolute' }} // Pełna szerokość i wysokość okna
-                scrollWheelZoom={true} // Wyłącza zoomowanie kółkiem myszy
-                dragging={true} // Wyłącza przeciąganie mapy
-                touchZoom={false} // Wyłącza zoomowanie za pomocą dotyku
-                doubleClickZoom={false} // Wyłącza zoomowanie przez podwójne kliknięcie
-                zoomControl={false} // Ukrywa kontrolki zoomowania
+                center={[latitude, longitude]}  
+                zoom={18} 
+                style={{ top: '0', left: '0', width: '100%', height: '100%', position: 'absolute' }} 
+                scrollWheelZoom={true} 
+                dragging={true}
+                touchZoom={false}
+                doubleClickZoom={false} 
+                zoomControl={false} 
             >
                 <TileLayer
                     url={googleSatUrl}
@@ -58,7 +58,7 @@ const Permalink = () => {
                 />
 
                 <Marker
-                    position={[latitude, longitude]} // Ustawienie pozycji markera
+                    position={[latitude, longitude]} 
                 />
             </MapContainer>
         </>

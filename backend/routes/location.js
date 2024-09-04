@@ -2,7 +2,7 @@ const express = require("express");
 const { authenticateToken } = require("../services/jwt");
 const router = express.Router();
 const db = require("../db/setup-db");
-// Define a route for getting locations - TO BE TESTED
+
 router.get("/visible", authenticateToken, (req, res) => {
     const userId = req.user.id;
   
@@ -28,9 +28,7 @@ router.get("/visible", authenticateToken, (req, res) => {
     });
   });
 
-// REQUIRES TESTING 
-// required: user_id from JWT | from, to, description. longtitude, latitude, public, title in req.body
-// Transforms to date format to match DATETIME in SQLite (YYYY-MM-DD HH:MM:SS)
+
 router.post("/", authenticateToken, (req, res) => {
   const { title, from, to, latitude, longitude, public = false, description = ''} = req.body;
   const userId = req.user.id

@@ -23,8 +23,7 @@ export const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here, you would typically call your login function with formData
-    // console.log(formData);
+
     try {
       await login(formData.username, formData.password);
       navigate('/')
@@ -52,7 +51,7 @@ position:'absolute',
   <OutdoorGrillIcon sx={{ fontSize: '1.5em', mr: 1 }} />
   GrillowniaApp
 </Typography>
-      {/* Formularz logowania */}
+
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -89,7 +88,7 @@ position:'absolute',
         </Button>
       </Box>
 
-      {/* Przekierowanie "Nie mam konta" */}
+
       <Typography variant="body2" sx={{ mt: 3,textAlign:'center' }}>
         Nie masz konta?{' '}
         <Link href="/register" sx={{ color: '#1DB954', textDecoration: 'none' }}>

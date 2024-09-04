@@ -5,11 +5,10 @@ const {
   verifyToken,
   generateToken,
   saveTokenInDatabase,
-  deleteTokenFromDatabase,
 } = require("../services/jwt");
 const db = require("../db/setup-db");
 
-// Define a simple route
+
 router.get("/", (req, res) => {
   res.send("Welcome to the Home Page!");
 });
@@ -28,7 +27,6 @@ router.get("/token", (req, res) => {
       console.error("JWT verification error:", err);
       return res.sendStatus(403);
     }
-    // deleteTokenFromDatabase(prevToken); // It should delete previous tokens, but for some reason i9t is not working...
     saveTokenInDatabase(
       generateToken({
         id: user.id,

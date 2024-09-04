@@ -9,7 +9,7 @@ const {
   deleteTokenFromDatabase,
 } = require("../services/jwt");
 
-// Define a route for getting users
+
 router.get("/", authenticateToken, (req, res) => {
   db.all("SELECT id, username FROM users", async (err, users) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -20,7 +20,7 @@ router.get("/", authenticateToken, (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  // Retrieve the user from the database
+
   db.get(
     "SELECT * FROM users WHERE username = ?",
     [username],
@@ -29,12 +29,10 @@ router.post("/login", async (req, res) => {
       if (!user)
         return res.status(401).json({ error: "Invalid username or password" });
 
-      // Compare the password with the hashed password stored in the database
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch)
         return res.status(401).json({ error: "Invalid username or password" });
 
-      // Generate a JWT and send it to the client
       try {
         const out = await saveTokenInDatabase(
           generateToken(user, user.id),
@@ -50,7 +48,6 @@ router.post("/login", async (req, res) => {
   );
 });
 
-// User Registration
 router.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -58,7 +55,6 @@ router.post("/register", async (req, res) => {
     if (!username || !password) {
       return res.status(400).json({ error: "Name and password are required" });
     }
-    // Hash the password before storing it
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const stmt = db.prepare(

@@ -26,7 +26,7 @@ function Navbar() {
   };
 
   const handleLogout = async () => {
-    // Tutaj dodaj logikę wylogowywania
+
     await logout()
   };
 
@@ -50,10 +50,10 @@ function Navbar() {
             sx={{ 
               display: 'flex', 
               alignItems: 'center', 
-              marginLeft: 'auto', // Dodaj to, aby przesunąć guzik na prawo
+              marginLeft: 'auto', 
               cursor: 'pointer',
             }} 
-            onClick={handleLogout} // Poprawnie przypisanie funkcji do kliknięcia
+            onClick={handleLogout} 
           >
             <ExitToAppIcon sx={{ fontSize: '1.5rem' }} />
           </Box>

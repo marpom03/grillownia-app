@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../services/axios';
-import { Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Switch, FormControlLabel, Select, MenuItem, InputLabel, FormControl, ListItemText, Checkbox, Typography, List, ListItem } from '@mui/material';
+import { Fab, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Switch, Select, MenuItem, InputLabel, FormControl, ListItemText, Checkbox, Typography, List, ListItem } from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -8,15 +8,14 @@ export default function Groupsbutton() {
   const [open, setOpen] = useState(false);
   const [openNewGroupModal, setOpenNewGroupModal] = useState(false);
   const [groupName, setGroupName] = useState('');
-  const [seeGrill, setSeeGrill] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState([]);
   const [people, setPeople] = useState([]);
-  const [groups, setGroups] = useState([]); // Stan dla grup
+  const [groups, setGroups] = useState([]); 
 
   useEffect(() => {
     axiosInstance.get('/users')
       .then(response => {
-        setPeople(response.data.users); // Aktualizacja stanu użytkowników
+        setPeople(response.data.users); 
       })
       .catch(error => console.error('Error fetching users:', error));
   }, []);
@@ -24,7 +23,7 @@ export default function Groupsbutton() {
   useEffect(() => {
     axiosInstance.get('/groups')
       .then(response => {
-        setGroups(response.data); // Aktualizacja stanu grup
+        setGroups(response.data); 
       })
       .catch(error => console.error('Error fetching groups:', error));
   }, []);
@@ -83,7 +82,7 @@ export default function Groupsbutton() {
         <ListIcon />
       </Fab>
 
-      {/* Pierwszy Modal - Lista Grup */}
+
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Groups</DialogTitle>
         <DialogContent>
@@ -111,7 +110,7 @@ export default function Groupsbutton() {
         </DialogActions>
       </Dialog>
 
-      {/* Drugi Modal - Dodaj Nową Grupę */}
+
       <Dialog open={openNewGroupModal} onClose={handleCloseNewGroupModal}>
         <DialogTitle>Add New Group</DialogTitle>
         <DialogContent>

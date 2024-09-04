@@ -4,10 +4,9 @@ const { authenticateToken } = require("../services/jwt");
 const router = express.Router();
 
 router.get("/", authenticateToken, (req, res) => {
-  // Access the route parameter
+
   const userId = req.user.id;
 
-  // Fetch data from the database or perform your logic here
   db.all(
     "SELECT * FROM users_groups INNER JOIN groups ON users_groups.group_id = groups.id WHERE user_id = ?",
     [userId],
@@ -16,13 +15,12 @@ router.get("/", authenticateToken, (req, res) => {
         console.error("Error fetching user's groups:", err);
         return res.status(500).json({ error: err.message });
       }
-
-      res.json(row); // Send the group data in the response
+      res.json(row);
     }
   );
 });
 
-// required users id list
+
 router.post("/", authenticateToken, (req, res) => {
   const { name, users } = req.body;
   const ownerId = req.user.id;
@@ -33,7 +31,7 @@ router.post("/", authenticateToken, (req, res) => {
     });
   }
 
-  // Insert the new group into the database
+
   const stmtInsertGroup = db.prepare(
     "INSERT INTO groups (name, owner_id) VALUES (?, ?)"
   );
@@ -45,12 +43,12 @@ router.post("/", authenticateToken, (req, res) => {
 
     const groupId = this.lastID;
 
-    // Prepare to insert users into users_groups
+
     const stmtInsertUsers = db.prepare(
       "INSERT INTO users_groups (user_id, group_id) VALUES (?, ?)"
     );
 
-    // Use a transaction to ensure all inserts are successful
+
     db.serialize(() => {
       db.run("BEGIN TRANSACTION");
 
@@ -74,7 +72,7 @@ router.post("/", authenticateToken, (req, res) => {
   stmtInsertGroup.finalize();
 });
 
-// user id from JWT, groupId and visible_location from body
+
 router.put("/", authenticateToken, (req, res) => {
   const userId = req.user.id;
   const { groupId, visible_location } = req.body;
@@ -91,19 +89,18 @@ router.put("/", authenticateToken, (req, res) => {
         WHERE group_id = ? AND user_id = ?
       `);
 
-  // Execute the SQL statement
+
   stmt.run(visible_location, groupId, userId, function (err) {
     if (err) {
       console.error("Error updating user's group visibility:", err);
       return res.status(500).json({ error: err.message });
     }
 
-    // Check if any rows were affected
+
     if (this.changes === 0) {
       return res.status(404).json({ error: "User or group not found" });
     }
 
-    // Respond with a success message
     res.status(200).json({ message: "Visibility updated successfully" });
   });
 

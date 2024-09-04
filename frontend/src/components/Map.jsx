@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   MapContainer, TileLayer, Marker, useMapEvents
 } from 'react-leaflet';
@@ -13,10 +13,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
+import Groupsbutton from './Groupsbutton';
 
 const style = `
   .huechange {
-    filter: hue-rotate(150deg); /* Ustawienie koloru markera, dostosuj kąt zgodnie z potrzebami */
+    filter: hue-rotate(150deg); /* Adjust color as needed */
   }
 `;
 
@@ -34,7 +35,7 @@ const Map = () => {
   const [markerRef, setMarkerRef] = useState(null);
   const [markers, setMarkers] = useState([]);
   
-  const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [eventName, setEventName] = useState('');
   const [startDate, setStartDate] = useState(dayjs());
@@ -42,37 +43,34 @@ const Map = () => {
   const [description, setDescription] = useState('');
 
   useEffect(() => {
-    axiosInstance.get('/location/visible')
-      .then(response => {
+    const fetchMarkers = async () => {
+      try {
+        const response = await axiosInstance.get('/location/visible');
         const now = dayjs();
         const filteredMarkers = response.data.locations.filter(location => dayjs(location.to_date).isAfter(now));
         setMarkers(filteredMarkers);
-      })
-      .catch(error => console.error('Error fetching locations:', error));
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+    };
+
+    fetchMarkers();
   }, []);
 
   useEffect(() => {
     addGlobalStyle(style);
-
+    
     if (markerRef) {
       markerRef._icon.classList.add("huechange");
     }
   }, [markerRef]);
 
-  useEffect(() => {
-    if (markerPosition.lat !== undefined && markerPosition.lng !== undefined) {
-      setMarkerPosition({ lat: markerPosition.lat, lng: markerPosition.lng });
-    }
-  }, [markerPosition]);
-
   const MapClickHandler = () => {
     useMapEvents({
       click(e) {
         const { lat, lng } = e.latlng;
-
         if (lat !== undefined && lng !== undefined) {
           setMarkerPosition({ lat, lng });
-          // Removed the handleClickOpen() call to prevent modal opening on map click
         }
       }
     });
@@ -80,34 +78,31 @@ const Map = () => {
     return null;
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleDialogOpen = () => setDialogOpen(true);
+  const handleDialogClose = () => setDialogOpen(false);
+
+  const handleCreateEvent = async () => {
+    try {
+      await axiosInstance.post('/location', {
+        title: eventName,
+        from: startDate,
+        to: endDate,
+        latitude: markerPosition.lat,
+        longitude: markerPosition.lng,
+        public: isPublic,
+        description
+      });
+      handleDialogClose();
+    } catch (error) {
+      console.error('Error creating event:', error);
+    }
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleCreateEvent = async() => {
-    await axiosInstance.post('/location', {
-      title: eventName,
-      from: startDate,
-      to: endDate,
-      latitude: markerPosition.lat,
-      longitude: markerPosition.lng,
-      public: isPublic,
-      description: description
-    });
-    setOpen(false);
-  };
-
-  const handleToggleChange = (event) => {
-    setIsPublic(event.target.checked);
-  };
+  const handleToggleChange = (event) => setIsPublic(event.target.checked);
 
   const handleMarkerClick = (title, description) => {
-    console.log(`Title: ${title}`);
-    console.log(`Description: ${description}`);
+    alert(`Nazwa: ${title}`+` Opis: ${description}`)
+
   };
 
   return (
@@ -131,7 +126,7 @@ const Map = () => {
 
         <MapClickHandler />
 
-        {markers.map((location) => (
+        {markers.map(location => (
           <Marker
             key={location.id}
             position={[location.latitude, location.longitude]}
@@ -156,15 +151,15 @@ const Map = () => {
           bottom: 16,
           left: 16,
         }}
-        onClick={handleClickOpen}
+        onClick={handleDialogOpen}
       >
         <AddLocationAltIcon />
       </Fab>
       
       <Dialog
         fullScreen
-        open={open}
-        onClose={handleClose}
+        open={dialogOpen}
+        onClose={handleDialogClose}
         PaperProps={{
           style: { padding: '24px' },
         }}
@@ -172,7 +167,7 @@ const Map = () => {
         <Typography variant="h5" style={{ fontWeight: 'bold', fontFamily: 'Roboto', color: '#333' }}>
           Nowe Wydarzenie
         </Typography>
-        <Typography variant="body1">{markerPosition.lat} -- {markerPosition.lng}</Typography>
+
         <DialogContent style={{ padding: '16px 0' }}>
           <TextField
             autoFocus
@@ -229,7 +224,7 @@ const Map = () => {
           />
         </DialogContent>
         <DialogActions style={{ padding: '16px' }}>
-          <Button onClick={handleClose} color="primary" style={{ fontFamily: 'Roboto' }}>
+          <Button onClick={handleDialogClose} color="primary" style={{ fontFamily: 'Roboto' }}>
             Anuluj
           </Button>
           <Button onClick={handleCreateEvent} color="primary" variant="contained" style={{ fontFamily: 'Roboto' }}>
@@ -237,6 +232,7 @@ const Map = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Groupsbutton />
     </>
   );
 };

@@ -26,8 +26,7 @@ export const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here, you would typically call your login function with formData
-    // console.log(formData);
+
     if (formData.password1 !== formData.password2) {
       setError("Passwords are not matching!")
     } else {
@@ -59,7 +58,7 @@ position:'absolute',
   <OutdoorGrillIcon sx={{ fontSize: '1.5em', mr: 1 }} />
   GrillowniaApp
 </Typography>
-      {/* Formularz logowania */}
+
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -106,7 +105,7 @@ position:'absolute',
         </Button>
       </Box>
 
-      {/* Przekierowanie "Nie mam konta" */}
+
       <Typography variant="body2" sx={{ mt: 3,textAlign:'center' }}>
         Masz już konto?{' '}
         <Link href="/login" sx={{ color: '#1DB954', textDecoration: 'none' }}>

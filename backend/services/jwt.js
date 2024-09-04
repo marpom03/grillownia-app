@@ -2,18 +2,15 @@ const jwt = require("jsonwebtoken");
 const db = require("../db/setup-db");
 const secretKey =
   "FITSy9dGK9BlOOrOqOi3xRaWjMPgR9KQtT0GaPiBaKQ7LcYniHsdsSA78iEy8BmOGAXpkVi7Imp9dZeHfJPptA==";
-
-// Function to generate a JWT
+  
 function generateToken(user) {
-  // Payload can include more information as needed
   const payload = {
     id: user.id,
     username: user.username,
   };
-  return jwt.sign(payload, secretKey, { expiresIn: "1h" }); // Token valid for 1 hour
+  return jwt.sign(payload, secretKey, { expiresIn: "1h" }); 
 }
 
-// Function to verify a JWT
 function verifyToken(token) {
   try {
     return jwt.verify(token, secretKey);
@@ -22,7 +19,6 @@ function verifyToken(token) {
   }
 }
 
-// Middleware to protect routes
 function authenticateToken(req, res, next) {
   const token = req.headers["authorization"];
   if (!token) return res.sendStatus(403);
@@ -35,7 +31,7 @@ function authenticateToken(req, res, next) {
 }
 
 function saveTokenInDatabase(token, userID) {
-  const expiryDate = new Date(); // Set the token's expiration date
+  const expiryDate = new Date(); 
   expiryDate.setHours(expiryDate.getHours() + 1);
 
   return new Promise((resolve, reject) => {
