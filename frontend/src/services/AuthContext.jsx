@@ -8,48 +8,45 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      console.log("Verifying the token")
-      axios.get('/token')
-        .then(response => {
-          localStorage.setItem('token', response.data.token);
-          setUser(response.data.user);
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-          setUser(null);
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    verifyToken();
   }, []);
 
+  const verifyToken = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await axios.get('/token?token=' + token);
+        setUser(response.data.username);
+        setLoading(false)
+        return true;
+      } catch (error) {
+        console.error('Token verification failed', error);
+        localStorage.removeItem('token');
+        setUser(null);
+        setLoading(false)
+        return false;
+      }
+    }
+    setLoading(false)
+    return false;
+  };
+
   const login = async (username, password) => {
-    // console.log(username)
     const response = await axios.post('/users/login', { username, password });
-    // console.log(password)
     const { token } = response.data;
-    // console.log(username, password, token)
     localStorage.setItem('token', token);
-    // axios.defaults.headers.common['authorization'] = `${token.token}`;
     setUser({ username });
   };
 
   const register = async (username, password) => {
-    // console.log(username)
     const response = await axios.post('/users/register', { username, password });
-    // console.log(password)
     const { token } = response.data;
-    // console.log(username, password, token)
     localStorage.setItem('token', token);
-    // axios.defaults.headers.common['authorization'] = `${token.token}`;
     setUser({ username });
   };
 
   const logout = async () => {
-    await axios.post('/users/logout'); // Optionally handle logout on backend
+    await axios.post('/users/logout');
     localStorage.removeItem('token');
     setUser(null);
   };
@@ -60,19 +57,18 @@ export const AuthProvider = ({ children }) => {
       params: { token: prevToken },
     });
     const { token } = response.data;
-    console.log(prevToken, "NEW TOKEN: ", token)
     localStorage.setItem('token', token);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      refreshToken(); // Refresh token at intervals, e.g., every 15 minutes
+      refreshToken();
     }, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, setLoading, verifyToken }}>
       {!loading && children}
     </AuthContext.Provider>
   );
