@@ -31,7 +31,8 @@ export default function Groupsbutton() {
 
   const handleToggleChange = async (groupId, currentVisibility) => {
     const newVisibility = currentVisibility === 1 ? 0 : 1;
-    await axiosInstance.put('/groups', { groupId, visible_location: newVisibility });
+    const booleanVisibility = newVisibility ===1 ? true:false;
+    await axiosInstance.put('/groups', { groupId, visible_location: booleanVisibility });
     setGroups(prevGroups =>
       prevGroups.map(group =>
         group.id === groupId
